@@ -128,4 +128,73 @@ private class SpringApplicationRunnerConfigurationAdapter extends OptionSetGroov
 		return Collections.unmodifiableSet(result);
 	}
 
+
+			private static URL[] getExtensionURLs() {
+		List<URL> urls = new ArrayList<>();
+		String home = SystemPropertyUtils.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
+		File extDirectory = new File(new File(home, "lib"), "ext");
+		if (extDirectory.isDirectory()) {
+			for (File file : extDirectory.listFiles()) {
+				if (file.getName().endsWith(".jar")) {
+					try {
+						urls.add(file.toURI().toURL());
+					}
+					catch (MalformedURLException ex) {
+						throw new IllegalStateException(ex);
+					}
+				}
+			}
+		}
+		return urls.toArray(new URL[0]);
+	}
+
+	 */
+	public static List<String> getUrls(String path, ClassLoader classLoader) {
+		if (classLoader == null) {
+			classLoader = ClassUtils.getDefaultClassLoader();
+		}
+		path = StringUtils.cleanPath(path);
+		try {
+			return getUrlsFromWildcardPath(path, classLoader);
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Cannot create URL from path [" + path + "]", ex);
+		}
+	}
+
+	private static List<String> getUrlsFromWildcardPath(String path, ClassLoader classLoader) throws IOException {
+		if (path.contains(":")) {
+			return getUrlsFromPrefixedWildcardPath(path, classLoader);
+		}
+		Set<String> result = new LinkedHashSet<>();
+		try {
+			result.addAll(getUrls(FILE_URL_PREFIX + path, classLoader));
+		}
+		catch (IllegalArgumentException ex) {
+			// ignore
+		}
+		path = stripLeadingSlashes(path);
+		result.addAll(getUrls(ALL_CLASSPATH_URL_PREFIX + path, classLoader));
+		return new ArrayList<>(result);
+	}
+
+	private static List<String> getUrlsFromPrefixedWildcardPath(String path, ClassLoader classLoader)
+			throws IOException {
+		Resource[] resources = new PathMatchingResourcePatternResolver(new FileSearchResourceLoader(classLoader))
+				.getResources(path);
+		List<String> result = new ArrayList<>();
+		for (Resource resource : resources) {
+			if (resource.exists()) {
+				if ("file".equals(resource.getURI().getScheme()) && resource.getFile().isDirectory()) {
+					result.addAll(getChildFiles(resource));
+					continue;
+				}
+				result.add(absolutePath(resource));
+			}
+		}
+		return result;
+	}
+
+		
+
 }
