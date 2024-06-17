@@ -54,4 +54,78 @@ private class SpringApplicationRunnerConfigurationAdapter extends OptionSetGroov
         return getOptions().has(RunOptionHandler.this.quietOption);
     }
 
+
+                @Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+
+	@Override
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		if (this.beanFactory instanceof ListableBeanFactory && getClass() == TypeExcludeFilter.class) {
+			for (TypeExcludeFilter delegate : getDelegates()) {
+				if (delegate.match(metadataReader, metadataReaderFactory)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private Collection<TypeExcludeFilter> getDelegates() {
+		Collection<TypeExcludeFilter> delegates = this.delegates;
+		if (delegates == null) {
+			delegates = ((ListableBeanFactory) this.beanFactory).getBeansOfType(TypeExcludeFilter.class).values();
+			this.delegates = delegates;
+		}
+		return delegates;
+	}
+
+
+
+                private String extractDescription(String uri) {
+		uri = uri.substring(JAR_SCHEME.length());
+		int firstDotJar = uri.indexOf(JAR_EXTENSION);
+		String firstJar = getFilename(uri.substring(0, firstDotJar + JAR_EXTENSION.length()));
+		uri = uri.substring(firstDotJar + JAR_EXTENSION.length());
+		int lastDotJar = uri.lastIndexOf(JAR_EXTENSION);
+		if (lastDotJar == -1) {
+			return firstJar;
+		}
+		return firstJar + uri.substring(0, lastDotJar + JAR_EXTENSION.length());
+	}
+
+
+                	/**
+	 * Configure the provided {@link ThreadPoolTaskExecutor} instance using this builder.
+	 * @param <T> the type of task executor
+	 * @param taskExecutor the {@link ThreadPoolTaskExecutor} to configure
+	 * @return the task executor instance
+	 * @see #build()
+	 * @see #build(Class)
+	 */
+	public <T extends ThreadPoolTaskExecutor> T configure(T taskExecutor) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this.queueCapacity).to(taskExecutor::setQueueCapacity);
+		map.from(this.corePoolSize).to(taskExecutor::setCorePoolSize);
+		map.from(this.maxPoolSize).to(taskExecutor::setMaxPoolSize);
+		map.from(this.keepAlive).asInt(Duration::getSeconds).to(taskExecutor::setKeepAliveSeconds);
+		map.from(this.allowCoreThreadTimeOut).to(taskExecutor::setAllowCoreThreadTimeOut);
+		map.from(this.awaitTermination).to(taskExecutor::setWaitForTasksToCompleteOnShutdown);
+		map.from(this.awaitTerminationPeriod).as(Duration::toMillis).to(taskExecutor::setAwaitTerminationMillis);
+		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);
+		map.from(this.taskDecorator).to(taskExecutor::setTaskDecorator);
+		if (!CollectionUtils.isEmpty(this.customizers)) {
+			this.customizers.forEach((customizer) -> customizer.customize(taskExecutor));
+		}
+		return taskExecutor;
+	}
+
+	private <T> Set<T> append(Set<T> set, Iterable<? extends T> additions) {
+		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
+		additions.forEach(result::add);
+		return Collections.unmodifiableSet(result);
+	}
+
 }
