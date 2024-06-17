@@ -490,4 +490,35 @@ public class SpringApplicationRunner {
 		return StringUtils.toStringArray(this.sources);
 	}
 
+	@GwtCompatible
+@ElementTypesAreNonnullByDefault
+final class Count implements Serializable {
+  private int value;
+
+  Count(int value) {
+    this.value = value;
+  }
+
+  public int get() {
+    return value;
+  }
+
+  public void add(int delta) {
+    value += delta;
+  }
+
+  public int addAndGet(int delta) {
+    return value += delta;
+  }
+
+  public void set(int newValue) {
+    value = newValue;
+  }
+
+  public int getAndSet(int newValue) {
+    int result = value;
+    value = newValue;
+    return result;
+  }
+
 }
