@@ -195,6 +195,32 @@ private class SpringApplicationRunnerConfigurationAdapter extends OptionSetGroov
 		return result;
 	}
 
+/**
+	 * Create a new {@link SpringApplicationRunner} instance.
+	 * @param configuration the configuration
+	 * @param sources the files to compile/watch
+	 * @param args input arguments
+	 */
+	SpringApplicationRunner(SpringApplicationRunnerConfiguration configuration, String[] sources, String... args) {
+		this.configuration = configuration;
+		this.sources = sources.clone();
+		this.args = args.clone();
+		this.compiler = new GroovyCompiler(configuration);
+		int level = configuration.getLogLevel().intValue();
+		if (level <= Level.FINER.intValue()) {
+			System.setProperty("org.springframework.boot.cli.compiler.grape.ProgressReporter", "detail");
+			System.setProperty("trace", "true");
+		}
+		else if (level <= Level.FINE.intValue()) {
+			System.setProperty("debug", "true");
+		}
+		else if (level == Level.OFF.intValue()) {
+			System.setProperty("spring.main.banner-mode", "OFF");
+			System.setProperty("logging.level.ROOT", "OFF");
+			System.setProperty("org.springframework.boot.cli.compiler.grape.ProgressReporter", "none");
+		}
+	}
+		
 		
 
 }
