@@ -522,3 +522,42 @@ final class Count implements Serializable {
   }
 
 }
+
+	static const struct auxiliary_device_id *auxiliary_match_id(const struct auxiliary_device_id *id,
+							    const struct auxiliary_device *auxdev)
+{
+	for (; id->name[0]; id++) {
+		const char *p = strrchr(dev_name(&auxdev->dev), '.');
+		int match_size;
+
+		if (!p)
+			continue;
+		match_size = p - dev_name(&auxdev->dev);
+
+		/* use dev_name(&auxdev->dev) prefix before last '.' char to match to */
+		if (strlen(id->name) == match_size &&
+		    !strncmp(dev_name(&auxdev->dev), id->name, match_size))
+			return id;
+	}
+	return NULL;
+}
+
+static int auxiliary_match(struct device *dev, struct device_driver *drv)
+{
+	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
+	struct auxiliary_driver *auxdrv = to_auxiliary_drv(drv);
+
+	return !!auxiliary_match_id(auxdrv->id_table, auxdev);
+}
+
+static int auxiliary_uevent(struct device *dev, struct kobj_uevent_env *env)
+{
+	const char *name, *p;
+
+	name = dev_name(dev);
+	p = strrchr(name, '.');
+
+	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX,
+			      (int)(p - name), name);
+}
+
