@@ -1,3 +1,105 @@
+/*
+*    ------ BEGIN LICENSE ATTRIBUTION ------
+*    
+*    Portions of this file have been appropriated or derived from the following project(s) and therefore require attribution to the original licenses and authors.
+*    
+*    Project: https://spring.io/projects/spring-boot
+*    Release: https://github.com/spring-projects/spring-boot/releases/tag/v2.7.18
+*    Source File: SpringApplicationRunner.java
+*    
+*    Copyrights:
+*      copyright 2012-2019 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Release: https://github.com/google/guava/releases/tag/v33.1.0
+*    Source File: Count.java
+*    
+*    Copyrights:
+*      copyright (c) 2011 the guava authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Project: https://spring.io/projects/spring-boot
+*    Release: https://github.com/spring-projects/spring-boot/releases/tag/v3.2.7
+*    Source File: JarUri.java
+*    
+*    Copyrights:
+*      copyright 2012-2020 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Release: https://github.com/mbogoevici/stream-cli/releases/tag/master-5e8f2ec
+*    Source File: RunModuleCommandHandler.java
+*    
+*    Copyrights:
+*      copyright 2015 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Project: https://spring.io/projects/spring-boot
+*    Release: https://github.com/spring-projects/spring-boot/releases/tag/v3.2.7
+*    Source File: TypeExcludeFilter.java
+*    
+*    Copyrights:
+*      copyright 2012-2019 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Project: https://spring.io/projects/spring-boot
+*    Release: https://github.com/spring-projects/spring-boot/releases/tag/v2.7.18
+*    Source File: ResourceUtils.java
+*    
+*    Copyrights:
+*      copyright 2012-2020 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Project: https://spring.io/projects/spring-boot
+*    Release: https://github.com/spring-projects/spring-boot/releases/tag/v3.2.7
+*    Source File: TaskExecutorBuilder.java
+*    
+*    Copyrights:
+*      copyright 2012-2020 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    
+*    Project: https://spring.io/projects/spring-boot
+*    Release: https://github.com/spring-projects/spring-boot/releases/tag/v2.7.18
+*    Source File: SourceOptions.java
+*    
+*    Copyrights:
+*      copyright 2012-2018 the original author or authors
+*    
+*    Licenses:
+*      Apache License 2.0
+*      SPDXId: Apache-2.0
+*    
+*    Auto-attribution by Threatrix, Inc.
+*    
+*    ------ END LICENSE ATTRIBUTION ------
+*/
 // spring-projects/spring-boot/blob/v2.6.4/spring-boot-project/spring-boot-cli/src/main/java/org/springframework/boot/cli/command/run/SpringApplicationRunner.java
 SpringApplicationRunner(SpringApplicationRunnerConfiguration configuration, String[] sources, String... args) {
         this.configuration = configuration;
